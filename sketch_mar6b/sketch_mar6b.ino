@@ -338,7 +338,19 @@ void loop()
                Serial.print(F("   Right Encoder speed = "));
                Serial.println(driveEncoders.lRawEncoderRightSpeed);
 #endif
-Serial.println(uc_Drive_Index);
+//Serial.println(uc_Drive_Index);
+              if(uc_Drive_Index == 4){
+                if(Scan.Available())     {                                       // If data is received{
+                  char valIR = Scan.Get_IR_Data();
+                  int valIR2 = Scan.Get_IR_Data();
+                  if(valIR == 'B'||valIR2 == 9){
+                    Bot.Stop("D1");
+                    Serial.println("Reading Light");
+                    uc_Drive_Index = 5;
+                  }
+                }
+              }
+
                if(bt_Motors_Enabled)                                          // Run motors only if enabled
                {
                   if(bt_2_S_Time_Up)                                          // Update drive state after 2 seconds
@@ -350,7 +362,7 @@ Serial.println(uc_Drive_Index);
                         case 0: // Stop, initializes bot position
                         {
                            Bot.Stop("D1"); 
-                           Bot.ToPosition("S1", map(4090, 0, 4096, ci_Claw_Servo_Open, ci_Claw_Servo_Closed));//closes claw
+                           Bot.ToPosition("S1", map(4000, 0, 4096, ci_Claw_Servo_Open, ci_Claw_Servo_Closed));//closes claw
                            Bot.ToPosition("S2", map(6500, 0, 4096, ci_Shoulder_Servo_Retracted,  ci_Shoulder_Servo_Extended));//shoulder forward  
                            uc_Drive_Index = 1;                                // Next state: drive forward
                            break;
@@ -380,10 +392,16 @@ Serial.println(uc_Drive_Index);
                         case 4: // Turn right (clockwise) until IR goes off DOESNT WORK
                         {
                            Bot.Right("D1", map(2000, 0, 4096, 150, 255));                   // turn
-                           if(Scan.Available())
-                           {//is going off without detecting anything for some reason
-                             uc_Drive_Index = 5;
-                           }                             
+                          //  if(Scan.Available())                                              // If data is received
+                          // {
+                          //  char valIR = Scan.Get_IR_Data();
+                          //  int valIR2 = Scan.Get_IR_Data();
+                          //  if(valIR == 'B'||valIR2 == 9){
+                          //    Bot.Stop("D1");
+                          //    Serial.println("Reading Light");
+                          //    uc_Drive_Index = 5;
+                          //   }
+                          //  }                           
                            break;
                         }
                         case 5:// does stop so yeah it works
@@ -395,7 +413,7 @@ Serial.println(uc_Drive_Index);
                         }
                         case 6:
                         {
-                          Bot.ToPosition("S1", map(3000, 0, 4096, ci_Claw_Servo_Open, ci_Claw_Servo_Closed));//claw close
+                          Bot.ToPosition("S1", map(4000, 0, 4096, ci_Claw_Servo_Open, ci_Claw_Servo_Closed));//claw close
                           uc_Drive_Index = 7;
                           break;
                         }
@@ -606,10 +624,15 @@ Serial.println(uc_Drive_Index);
          {
             if(Scan.Available())                                              // If data is received
             {
-              Serial.println(Scan.Get_IR_Data());                             // Output received data to serial
+            char valIR = Scan.Get_IR_Data();
+            int valIR2 = Scan.Get_IR_Data();
+            if(valIR == 'B'||valIR2 == 9){
+             Serial.println("Ultraviolet Input");  
+            }else{Serial.println("No Out");}
             }
             break;
          }
+         
            
          case 6: //add your code to do something 
          {
